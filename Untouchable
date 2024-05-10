@@ -1,0 +1,27 @@
+#Importando e iniciando biblioteca
+import pygame
+pygame.init()
+
+#Criando tela e cores
+tela = pygame.display.set_mode([600, 600])
+vermelho = (255, 0, 0)
+verde = (0, 255, 0)
+azul = (0, 0, 255)
+fundo_tela = azul
+
+#Criando loop do jogo
+rodando = True
+while rodando:
+
+    for evento in pygame.event.get():
+        if evento.type == pygame.QUIT:
+            rodando = False
+
+        tela.fill((fundo_tela))
+
+        pygame.draw.circle(tela, verde, (300, 300), 30, 5)
+
+        pygame.display.flip()
+
+#Encerrando a biblioteca
+pygame.quit()
