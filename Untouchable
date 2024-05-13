@@ -5,6 +5,7 @@ pygame.init()
 #Criando tela e cores
 tela = pygame.display.set_mode([600, 600])
 vermelho = (255, 0, 0)
+
 verde = (0, 255, 0)
 azul = (0, 0, 255)
 fundo_tela = azul
