@@ -13,19 +13,55 @@ preto = (0, 0, 0)
 laranja = (255, 140, 0)
 fundo_tela = azul
 
+fps = 60
+circulo_x = 300
+circulo_y = 300
+circulo_x_direc = 5
+circulo_y_direc = 8
+
+timer = pygame.time.Clock()
+
+def atualizar_posicao_bola():
+    global circulo_x 
+    global circulo_y 
+    global circulo_x_direc
+    global circulo_y_direc 
+    if circulo_x_direc > 0:
+        if circulo_x < 570:
+            circulo_x += circulo_x_direc
+        else:
+            circulo_x_direc *= -1
+    elif circulo_x_direc < 0:
+        if circulo_x > 30:
+            circulo_x += circulo_x_direc
+        else:
+            circulo_x_direc *= -1
+    if circulo_y_direc > 0:
+        if circulo_y < 570:
+            circulo_y += circulo_x_direc
+        else:
+            circulo_y_direc *= -1
+    elif circulo_y_direc < 0:
+        if circulo_y > 30:
+            circulo_y += circulo_x_direc
+        else:
+            circulo_y_direc *= -1
+
 #Criando loop do jogo
 rodando = True
 while rodando:
+    timer.tick(fps)
+    atualizar_posicao_bola()
 
     for evento in pygame.event.get():
         if evento.type == pygame.QUIT:
             rodando = False
 
-        tela.fill((fundo_tela))
+    tela.fill((fundo_tela))
 
-        pygame.draw.circle(tela, verde, (300, 300), 30, 5)
+    pygame.draw.circle(tela, verde, (circulo_x, circulo_y), 30, 5)
 
-        pygame.display.flip()
+    pygame.display.flip()
 
 #Encerrando a biblioteca
 pygame.quit()
