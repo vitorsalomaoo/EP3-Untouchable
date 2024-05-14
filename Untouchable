@@ -1,24 +1,25 @@
 #Importando e iniciando biblioteca
 import pygame
 pygame.init()
-
 #Criando tela e cores
 tela = pygame.display.set_mode([600, 600])
-pygame.display.set_caption('Untouchable')
+pygame.display.set_caption('Intocável')
 vermelho = (255, 0, 0)
 verde = (0, 255, 0)
 azul = (0, 0, 255)
 branco = (255, 255, 255)
 preto = (0, 0, 0)
-laranja = (255, 140, 0)
 fundo_tela = azul
-
 fps = 60
 circulo_x = 300
 circulo_y = 300
-circulo_x_direc = 5
-circulo_y_direc = 8
+circulo_x_direc = 3
+circulo_y_direc = 6
+circulo_x_direc = 4
+circulo_y_direc = 5
 
+fonte = pygame.font.Font('freesansbold.ttf', 20)
+score = 0
 timer = pygame.time.Clock()
 
 def atualizar_posicao_bola():
@@ -26,41 +27,50 @@ def atualizar_posicao_bola():
     global circulo_y 
     global circulo_x_direc
     global circulo_y_direc 
+    global score
     if circulo_x_direc > 0:
         if circulo_x < 570:
             circulo_x += circulo_x_direc
         else:
             circulo_x_direc *= -1
+            score += 1
     elif circulo_x_direc < 0:
         if circulo_x > 30:
             circulo_x += circulo_x_direc
         else:
             circulo_x_direc *= -1
+            score += 1
     if circulo_y_direc > 0:
         if circulo_y < 570:
             circulo_y += circulo_x_direc
+            circulo_y += circulo_y_direc
         else:
             circulo_y_direc *= -1
+            score += 1
     elif circulo_y_direc < 0:
         if circulo_y > 30:
             circulo_y += circulo_x_direc
+            circulo_y += circulo_y_direc
         else:
             circulo_y_direc *= -1
+            score += 1
 
-#Criando loop do jogo
+
+#Loop do jogo
 rodando = True
 while rodando:
     timer.tick(fps)
     atualizar_posicao_bola()
-
     for evento in pygame.event.get():
         if evento.type == pygame.QUIT:
             rodando = False
-
     tela.fill((fundo_tela))
 
     pygame.draw.circle(tela, verde, (circulo_x, circulo_y), 30, 5)
 
+    pygame.draw.circle(tela, vermelho, (circulo_x, circulo_y), 25)
+    display_score = fonte.render('Score: '+ str(score), True, branco, preto)
+    tela.blit(display_score, (10, 10))
     pygame.display.flip()
 
 #Encerrando a biblioteca
