@@ -9,18 +9,45 @@ verde = (0, 255, 0)
 azul = (0, 0, 255)
 branco = (255, 255, 255)
 preto = (0, 0, 0)
+laranja = (255, 165, 0)
 fundo_tela = azul
 fps = 60
 circulo_x = 300
 circulo_y = 300
-circulo_x_direc = 3
-circulo_y_direc = 6
 circulo_x_direc = 4
 circulo_y_direc = 5
+
+largura_jogador = 30
+altura_jogador = 50
+jogador_x = 300
+jogador_y = 500
+direcao_x_jogador = 0
+direcao_y_jogador = 0
+velocidade_jogador = 3
 
 fonte = pygame.font.Font('freesansbold.ttf', 20)
 score = 0
 timer = pygame.time.Clock()
+
+def atualizar_posicao_jogador():
+    global jogador_x
+    global jogador_y
+    global direcao_x_jogador
+    global direcao_y_jogador
+    if direcao_x_jogador > 0:
+        if jogador_x < 600 - largura_jogador:
+            jogador_x += direcao_x_jogador * velocidade_jogador
+    if direcao_x_jogador < 0:
+        if jogador_x > 0:
+            jogador_x += direcao_x_jogador * velocidade_jogador
+    if direcao_y_jogador > 0:
+        if jogador_y < 600 - altura_jogador:
+            jogador_y += direcao_y_jogador * velocidade_jogador
+    if direcao_y_jogador < 0:
+        if jogador_y > 0:
+            jogador_y += direcao_y_jogador * velocidade_jogador
+
+
 
 def atualizar_posicao_bola():
     global circulo_x 
@@ -42,36 +69,53 @@ def atualizar_posicao_bola():
             score += 1
     if circulo_y_direc > 0:
         if circulo_y < 570:
-            circulo_y += circulo_x_direc
             circulo_y += circulo_y_direc
         else:
             circulo_y_direc *= -1
             score += 1
     elif circulo_y_direc < 0:
         if circulo_y > 30:
-            circulo_y += circulo_x_direc
             circulo_y += circulo_y_direc
         else:
             circulo_y_direc *= -1
             score += 1
-
-
 #Loop do jogo
 rodando = True
 while rodando:
     timer.tick(fps)
     atualizar_posicao_bola()
+
+    atualizar_posicao_jogador()
     for evento in pygame.event.get():
         if evento.type == pygame.QUIT:
             rodando = False
+        if evento.type == pygame.KEYDOWN:
+            if evento.key == pygame.K_LEFT:
+                direcao_x_jogador = -1
+            if evento.key == pygame.K_RIGHT:
+                direcao_x_jogador = 1
+            if evento.key == pygame.K_UP:
+                direcao_y_jogador = -1
+            if evento.key == pygame.K_DOWN:
+                direcao_y_jogador = 1
+        if evento.type == pygame.KEYUP:
+            if evento.key == pygame.K_LEFT:
+                direcao_x_jogador = 0
+            if evento.key == pygame.K_RIGHT:
+                direcao_x_jogador = 0
+            if evento.key == pygame.K_UP:
+                direcao_y_jogador = 0
+            if evento.key == pygame.K_DOWN:
+                direcao_y_jogador = 0
+
+
     tela.fill((fundo_tela))
 
     pygame.draw.circle(tela, verde, (circulo_x, circulo_y), 30, 5)
-
     pygame.draw.circle(tela, vermelho, (circulo_x, circulo_y), 25)
+    pygame.draw.rect(tela, laranja, [jogador_x, jogador_y, largura_jogador, altura_jogador])
     display_score = fonte.render('Score: '+ str(score), True, branco, preto)
     tela.blit(display_score, (10, 10))
     pygame.display.flip()
-
 #Encerrando a biblioteca
 pygame.quit()
