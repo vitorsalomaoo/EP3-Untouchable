@@ -23,11 +23,14 @@ jogador_y = 500
 direcao_x_jogador = 0
 direcao_y_jogador = 0
 velocidade_jogador = 3
-
 fonte = pygame.font.Font('freesansbold.ttf', 20)
 fonte_game_over = pygame.font.Font('freesansbold.ttf', 60)
 score = 0
+recorde_anterior = 0
+recorde = 0
 timer = pygame.time.Clock()
+
+gameover = False
 
 def checar_colisao(jogador_x, jogador_y, bola_x, bola_y):
     if abs(jogador_x - bola_x) < 44 and abs(jogador_y - bola_y) < 54:
@@ -43,8 +46,12 @@ def checar_colisao(jogador_x, jogador_y, bola_x, bola_y):
 
 
 def game_over():
+    global gameover
     display_game_over = fonte_game_over.render('GAME OVER', True, vermelho, preto)
     tela.blit(display_game_over, (70, 300))
+    display_restart = fonte.render('Aperte Espaço para Recomeçar', True, branco, preto)
+    tela.blit(display_restart, (170, 450))
+    gameover = True
 
 
 def atualizar_posicao_jogador():
@@ -121,17 +128,33 @@ while rodando:
                 direcao_y_jogador = 0
             if evento.key == pygame.K_DOWN:
                 direcao_y_jogador = 0
+            if evento.key == pygame.K_SPACE and gameover:
+                circulo_x = 300
+                circulo_y = 300
+                circulo_x_direc = 4
+                circulo_y_direc = 5
+                jogador_x = 300
+                jogador_y = 500
+                recorde_anterior = score
+                if score > recorde:
+                    recorde = score
+                score = 0
+                gameover = False
+
+
 
     tela.fill((fundo_tela))
-
-    pygame.draw.circle(tela, verde, (circulo_x, circulo_y), 30, 5)
     bola = pygame.draw.circle(tela, verde, (circulo_x, circulo_y), 30, 5)
     pygame.draw.circle(tela, vermelho, (circulo_x, circulo_y), 25)
-    pygame.draw.rect(tela, laranja, [jogador_x, jogador_y, largura_jogador, altura_jogador])
     jogador = pygame.draw.rect(tela, laranja, [jogador_x, jogador_y, largura_jogador, altura_jogador])
     checar_colisao(jogador.centerx, jogador.centery, bola.centerx, bola.centery)
     display_score = fonte.render('Score: '+ str(score), True, branco, preto)
     tela.blit(display_score, (10, 10))
+    display_recorde_anterior = fonte.render('Last Score: '+ str(recorde_anterior), True, branco, preto)
+    tela.blit(display_recorde_anterior, (10, 30))
+    display_recorde = fonte.render('High Score: '+ str(recorde), True, branco, preto)
+    tela.blit(display_recorde, (10, 50))
     pygame.display.flip()
+
 #Encerrando a biblioteca
 pygame.quit()
