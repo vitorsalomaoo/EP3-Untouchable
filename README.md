@@ -44,4 +44,5 @@ Para instalar "Untouchable" e todas as bibliotecas necessárias, siga estes pass
 [colocar link do jogo]
 
 
-# Esperamos que você desfrute do jogo, e fuja da bola de fogo!
+# Esperamos que você desfrute do jogo
+# E não se esqueça, fuja da bola de fogo!
