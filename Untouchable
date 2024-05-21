@@ -3,7 +3,6 @@ import pygame
 pygame.init()
 pygame.mixer.init()
 from random import randint
-
 #Criando tela e cores
 tela = pygame.display.set_mode([600, 600])
 pygame.display.set_caption('Untouchable')
@@ -12,15 +11,15 @@ verde = (0, 255, 0)
 azul = (0, 0, 255)
 branco = (255, 255, 255)
 preto = (0, 0, 0)
-laranja = (255, 165, 0)
 laranja = (255, 140, 0)
-
 #Inserindo as imagens
 imagem_fundo = pygame.transform.scale(pygame.image.load('imagens/masmorra_print.png'), size = (600,600))
 imagem_pers_e = pygame.transform.scale(pygame.image.load('imagens/personagem3_esq.png'), size = (30,50))
 imagem_pers_d = pygame.transform.scale(pygame.image.load('imagens/personagem3_dir2.png'), size = (30,50))
 imagem_bola = pygame.transform.scale(pygame.image.load('imagens/bola_de_fogo2.png'), size = (80,80))
 imagem_boost = pygame.transform.scale(pygame.image.load('imagens/raioamarelo.png'), size = (40,40))
+imagem_inicio = pygame.transform.scale(pygame.image.load('imagens/inicio.png'), size = (600,600))
+imagem_pergaminho = pygame.transform.scale(pygame.image.load('imagens/pergaminho2.png'), size = (450,320))
 fundo_tela = azul
 
 # Carrega os sons do jogo
@@ -29,6 +28,7 @@ pygame.mixer.music.set_volume(0.4)
 boost_sound = pygame.mixer.Sound('sons/pegar_boost.wav')
 queimando_sound = pygame.mixer.Sound('sons/lava.flac')
 gameover_sound = pygame.mixer.Sound('sons/game_over.mp3')
+gameover_sound = pygame.mixer.Sound('sons/game_over4.mp3')
 aparecer_boost_sound = pygame.mixer.Sound('sons/spawn_boost1.mp3')
 
 fps = 60
@@ -43,6 +43,9 @@ jogador_y = 500
 direcao_x_jogador = 0
 direcao_y_jogador = 0
 velocidade_jogador = 3
+
+# Carregar as fontes 
+
 fonte = pygame.font.Font('freesansbold.ttf', 20)
 fonte_game_over = pygame.font.Font('freesansbold.ttf', 60)
 score = 0
@@ -52,6 +55,7 @@ timer = pygame.time.Clock()
 
 gameover = False
 perdeu = 0
+inicio = False
 
 velocidade_booster_disponivel = False
 som_boost = 0
@@ -99,13 +103,11 @@ def checar_colisao(jogador_x, jogador_y, bola_x, bola_y):
 def game_over():
     global gameover
     display_game_over = fonte_game_over.render('GAME OVER', True, vermelho, preto)
-    tela.blit(display_game_over, (70, 300))
     tela.blit(display_game_over, (110, 300))
     display_restart = fonte.render('Aperte Espaço para Recomeçar', True, branco, preto)
-    tela.blit(display_restart, (170, 450))
     tela.blit(display_restart, (140, 450))
     gameover = True
-
+    
 def atualizar_posicao_jogador():
     global jogador_x
     global jogador_y
@@ -154,6 +156,14 @@ def atualizar_posicao_bola():
             circulo_y_direc *= -1
             score += 1
 
+def cria_tela_inicio():
+    tela.fill((preto))
+    tela.blit(imagem_inicio,(0,0))
+    tela.blit(imagem_pergaminho,(75, 80))
+    botao_start = pygame.draw.rect(tela, 'purple', [220, 490, 150, 40], 0, 10)
+    tela.blit(fonte.render('Start', True, 'black'), (271, 497))
+
+    return botao_start
 
 imagem_pers = imagem_pers_e
 contador = 0
@@ -211,26 +221,33 @@ while rodando:
                 perdeu = 0
                 som_boost = 0
 
+    # Adicionando tela de ínicio
+    while not inicio:
+        botao_start = cria_tela_inicio()
+        pygame.display.update()
+        for evento in pygame.event.get():
+            if evento.type == pygame.QUIT:
+                inicio = True
+                rodando = False
+            if evento.type == pygame.MOUSEBUTTONDOWN and botao_start.collidepoint(evento.pos):
+                inicio = True
+
+
+
     tela.fill((preto))
     tela.blit(imagem_fundo,(0,0))
 
-
-    tela.fill((fundo_tela))
-
-    bola = pygame.draw.circle(tela, verde, (circulo_x, circulo_y), 30, 5)
     bola = pygame.draw.circle(tela, laranja, (circulo_x, circulo_y), 30, 5)
     pygame.draw.circle(tela, vermelho, (circulo_x, circulo_y), 25)
-    jogador = pygame.draw.rect(tela, laranja, [jogador_x, jogador_y, largura_jogador, altura_jogador])
     tela.blit(imagem_bola,(circulo_x-40,circulo_y-40))
-
     jogador = pygame.rect.Rect(jogador_x, jogador_y, largura_jogador, altura_jogador)
     tela.blit(imagem_pers,(jogador_x,jogador_y))
     checar_colisao(jogador.centerx, jogador.centery, bola.centerx, bola.centery)
-
+   
+   #preciso aprender como faz para ele tocar só uma vez
     if gameover and perdeu == 0:
         gameover_sound.play()
         perdeu = 1
-
     display_score = fonte.render('Score: '+ str(score), True, branco, preto)
     tela.blit(display_score, (10, 10))
     display_recorde_anterior = fonte.render('Last Score: '+ str(recorde_anterior), True, branco, preto)
@@ -238,8 +255,7 @@ while rodando:
     display_recorde = fonte.render('High Score: '+ str(recorde), True, branco, preto)
     tela.blit(display_recorde, (10, 50))
     if velocidade_booster_disponivel:
-        velocidade_boost = pygame.draw.rect(tela, branco, [velocidade_x, velocidade_y, 20, 20])
-
+        #preciso aprender como faz para ele tocar só uma vez
         velocidade_boost = pygame.rect.Rect(velocidade_x, velocidade_y, 20, 20)
         tela.blit(imagem_boost,(velocidade_x,velocidade_y))
         if som_boost == 0:
@@ -256,7 +272,6 @@ while rodando:
     display_velo = fonte.render('Velocidade: '+ str(velocidade_jogador - 2), True, branco, preto)
     tela.blit(display_velo, (450, 10))
     pygame.display.flip()
-
     contador += 1
 #Encerrando a biblioteca
 pygame.quit()
