@@ -1,11 +1,37 @@
-Projeto Final - Pygame Design de Software - Engenharia 2024.1
+# Untouchable
 
-Grupo - Felipe Tomaspolsky, Bruno Fasanella e Vitor Salomão
+# Projeto Final - Pygame Design de Software - Engenharia 2024.1
 
-Título do projeto: Untouchable
+## Desenvolvedores
+- Vitor Salomão
+- Felipe Tomaspolsky
+- Bruno Fasanella
 
-Para fazer o jogo foram utilizadas duas bibliotecas principais, a biblioteca do pygame: 'pygame' e a biblioteca que contém funções de escolhas aleatórias: 'random' e dela foi utilizada a função: 'randint'.
 
-O objetivo do jogo é fugir da bola de fogo que habita uma masmorra, essa bola de fogo fica batendo na parede da masmorra e mudando sua trajetória até queimar o guerreiro que você controla pelo teclado.
+## Sobre o Jogo
+"Untouchable" é um jogo de resistência e agilidade, onde um jovem camponês enfrenta perigos incessantes dentro de uma masmorra. O objetivo do jogador é manobrar os movimentos verticais e horizontais do camponês para evitar colisões com uma bola flamejante!
 
+## Como Jogar
+- **Início**: Clique no botão "start" com o mouse para iniciar o jogo.
+- **Controle**: Movimente o camponês utilizando as teclas direcionais do teclado.
+- **Objetivo**: Evite que o camponês seja atingido pela bola de fogo.
+- **Pontuação**: Ganhe pontos cada vez que a bola de fogo bate nas paredes. A pontuação é igual ao número de batidas.
+- **Power-ups**: A cada dez batidas, um raio aparece aleatoriamente no mapa. Se alcançado pelo camponês, sua velocidade aumenta.
 
+## Fim do Jogo
+- O jogo termina quando o camponês é atingido pela bola de fogo, exibindo a tela de "game over".
+- **Recomeçar**: Pressione a tecla espaço para jogar novamente.
+- **Sair**: Pressione a tecla esc e clique no botão "quit" para fechar o jogo.
+
+## Instalação
+Para instalar "Untouchable" e todas as bibliotecas necessárias, siga estes passos:
+1. Certifique-se de ter o Python instalado em seu sistema.
+2. Instale a biblioteca Pygame usando o comando `pip install pygame`.
+3. Baixe os arquivos do jogo do repositório.
+4. Execute o arquivo principal do jogo para começar a jogar.
+
+## Tecnologia
+- Desenvolvido com a biblioteca Pygame para Python.
+
+## Vídeo Demonstrativo
+[colocar link do jogo]
