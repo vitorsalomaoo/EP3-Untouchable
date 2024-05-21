@@ -1,6 +1,8 @@
 # Untouchable
 
+
 # Projeto Final - Pygame Design de Software - Engenharia 2024.1
+
 
 ## Desenvolvedores
 - Vitor Salomão
@@ -42,4 +44,4 @@ Para instalar "Untouchable" e todas as bibliotecas necessárias, siga estes pass
 [colocar link do jogo]
 
 
-# Esperamos que você desfrute do jogo, e não se esqueça, fuja da bola de fogo!
+# Esperamos que você desfrute do jogo, e fuja da bola de fogo!
