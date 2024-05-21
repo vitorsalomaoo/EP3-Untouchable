@@ -1,6 +1,8 @@
-#Importando e iniciando biblioteca
+#Importando e iniciando bibliotecas
 import pygame
 pygame.init()
+from random import randint
+
 #Criando tela e cores
 tela = pygame.display.set_mode([600, 600])
 pygame.display.set_caption('Intocável')
@@ -32,6 +34,23 @@ timer = pygame.time.Clock()
 
 gameover = False
 
+velocidade_booster_disponivel = False
+velocidade_x = -100
+velocidade_y = -100
+last_grab = 0
+
+def checar_velocidade_boost():
+    global velocidade_booster_disponivel
+    global score
+    global last_grab
+    global velocidade_x
+    global velocidade_y
+    global velocidade_jogador
+    if score - last_grab > 10 and not velocidade_booster_disponivel:
+        velocidade_booster_disponivel = True
+        velocidade_x = randint(0, 580)
+        velocidade_y = randint(0, 580)
+
 def checar_dificuldade():
     global score
     global circulo_x_direc
@@ -46,8 +65,6 @@ def checar_dificuldade():
         circulo_y_direc = 5 + y_mod
     elif circulo_y_direc < 0:
         circulo_y_direc = -5 - y_mod
-
-
 def checar_colisao(jogador_x, jogador_y, bola_x, bola_y):
     if abs(jogador_x - bola_x) < 44 and abs(jogador_y - bola_y) < 54:
         global direcao_x_jogador
@@ -120,6 +137,7 @@ while rodando:
     atualizar_posicao_bola()
     atualizar_posicao_jogador()
     checar_dificuldade()
+    checar_velocidade_boost()
     for evento in pygame.event.get():
         if evento.type == pygame.QUIT:
             rodando = False
@@ -152,7 +170,13 @@ while rodando:
                 if score > recorde:
                     recorde = score
                 score = 0
+                last_grab = 0
+                velocidade_jogador = 3
+                velocidade_x = -100
+                velocidade_y = -100
                 gameover = False
+
+
     tela.fill((fundo_tela))
     bola = pygame.draw.circle(tela, verde, (circulo_x, circulo_y), 30, 5)
     pygame.draw.circle(tela, vermelho, (circulo_x, circulo_y), 25)
@@ -164,6 +188,17 @@ while rodando:
     tela.blit(display_recorde_anterior, (10, 30))
     display_recorde = fonte.render('High Score: '+ str(recorde), True, branco, preto)
     tela.blit(display_recorde, (10, 50))
+    if velocidade_booster_disponivel:
+        velocidade_boost = pygame.draw.rect(tela, branco, [velocidade_x, velocidade_y, 20, 20])
+        if jogador.colliderect(velocidade_boost):
+            velocidade_jogador += 1
+            velocidade_x = -100
+            velocidade_y = -100
+            last_grab = score
+            velocidade_booster_disponivel = False
+    display_velo = fonte.render('Velocidade: '+ str(velocidade_jogador - 2), True, branco, preto)
+    tela.blit(display_velo, (450, 10))
     pygame.display.flip()
+
 #Encerrando a biblioteca
 pygame.quit()
