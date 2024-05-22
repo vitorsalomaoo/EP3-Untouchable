@@ -3,8 +3,10 @@ import pygame
 pygame.init()
 pygame.mixer.init()
 from random import randint
+
 #Criando tela e cores
 tela = pygame.display.set_mode([600, 600])
+superficie = pygame.Surface((600, 600), pygame.SRCALPHA)
 pygame.display.set_caption('Untouchable')
 vermelho = (255, 0, 0)
 verde = (0, 255, 0)
@@ -12,6 +14,8 @@ azul = (0, 0, 255)
 branco = (255, 255, 255)
 preto = (0, 0, 0)
 laranja = (255, 140, 0)
+
+
 #Inserindo as imagens
 imagem_fundo = pygame.transform.scale(pygame.image.load('imagens/masmorra_print.png'), size = (600,600))
 imagem_pers_e = pygame.transform.scale(pygame.image.load('imagens/personagem3_esq.png'), size = (30,50))
@@ -19,23 +23,27 @@ imagem_pers_d = pygame.transform.scale(pygame.image.load('imagens/personagem3_di
 imagem_bola = pygame.transform.scale(pygame.image.load('imagens/bola_de_fogo2.png'), size = (80,80))
 imagem_boost = pygame.transform.scale(pygame.image.load('imagens/raioamarelo.png'), size = (40,40))
 imagem_inicio = pygame.transform.scale(pygame.image.load('imagens/inicio.png'), size = (600,600))
-imagem_pergaminho = pygame.transform.scale(pygame.image.load('imagens/pergaminho2.png'), size = (450,320))
+imagem_pergaminho = pygame.transform.scale(pygame.image.load('imagens/pergaminho11.png'), size = (450,320))
+imagem_pause = pygame.transform.scale(pygame.image.load('imagens/imagem_pause.jpg'), size = (600,600))
 fundo_tela = azul
+imagem_pers = imagem_pers_e
 
 # Carrega os sons do jogo
 pygame.mixer.music.load('sons/mus_fundo1.mp3')
 pygame.mixer.music.set_volume(0.4)
 boost_sound = pygame.mixer.Sound('sons/pegar_boost.wav')
 queimando_sound = pygame.mixer.Sound('sons/lava.flac')
-gameover_sound = pygame.mixer.Sound('sons/game_over.mp3')
 gameover_sound = pygame.mixer.Sound('sons/game_over4.mp3')
 aparecer_boost_sound = pygame.mixer.Sound('sons/spawn_boost1.mp3')
 
+# Configurações iniciais bola de fogo
 fps = 60
 circulo_x = 300
 circulo_y = 300
 circulo_x_direc = 5
 circulo_y_direc = 8
+
+# Configurações iniciais jogdor
 largura_jogador = 30
 altura_jogador = 50
 jogador_x = 300
@@ -45,23 +53,31 @@ direcao_y_jogador = 0
 velocidade_jogador = 3
 
 # Carregar as fontes 
-
 fonte = pygame.font.Font('freesansbold.ttf', 20)
 fonte_game_over = pygame.font.Font('freesansbold.ttf', 60)
+
+# Configurações iniciais gerais
 score = 0
 recorde_anterior = 0
 recorde = 0
 timer = pygame.time.Clock()
 
+contador = 0
 gameover = False
 perdeu = 0
 inicio = False
+pause = False
 
+# Configurações iniciais booster
 velocidade_booster_disponivel = False
 som_boost = 0
 velocidade_x = -100
 velocidade_y = -100
 last_grab = 0
+
+
+# FUNÇÕES
+
 def checar_velocidade_boost():
     global velocidade_booster_disponivel
     global score
@@ -73,6 +89,7 @@ def checar_velocidade_boost():
         velocidade_booster_disponivel = True
         velocidade_x = randint(0, 580)
         velocidade_y = randint(0, 580)
+
 def checar_dificuldade():
     global score
     global circulo_x_direc
@@ -89,6 +106,8 @@ def checar_dificuldade():
         circulo_y_direc = 8 + y_mod
     elif circulo_y_direc < 0:
         circulo_y_direc = -8 - y_mod
+
+
 def checar_colisao(jogador_x, jogador_y, bola_x, bola_y):
     if abs(jogador_x - bola_x) < 44 and abs(jogador_y - bola_y) < 54:
         global direcao_x_jogador
@@ -100,6 +119,8 @@ def checar_colisao(jogador_x, jogador_y, bola_x, bola_y):
         circulo_x_direc = 0
         circulo_y_direc = 0
         game_over()
+
+
 def game_over():
     global gameover
     display_game_over = fonte_game_over.render('GAME OVER', True, vermelho, preto)
@@ -108,6 +129,8 @@ def game_over():
     tela.blit(display_restart, (140, 450))
     gameover = True
     
+
+
 def atualizar_posicao_jogador():
     global jogador_x
     global jogador_y
@@ -125,6 +148,9 @@ def atualizar_posicao_jogador():
     if direcao_y_jogador < 0:
         if jogador_y > 0:
             jogador_y += direcao_y_jogador * velocidade_jogador
+
+
+
 def atualizar_posicao_bola():
     global circulo_x 
     global circulo_y 
@@ -165,21 +191,45 @@ def cria_tela_inicio():
 
     return botao_start
 
-imagem_pers = imagem_pers_e
-contador = 0
-#Loop do jogo
+def pausar():
+    tela.blit(imagem_pause, (0, 0))
+    pygame.draw.rect(tela, 'purple', [0, 330, 600, 50], 0, 10)
+    tela.blit(fonte.render('Aperte "esc" para retomar', True, 'white'), (140, 340))
+    botao_restart = pygame.draw.rect(tela, 'purple', [0, 270, 280, 50], 0, 10)
+    tela.blit(fonte.render('Restart', True, 'white'), (100, 280))
+    botao_quitar = pygame.draw.rect(tela, 'purple', [320, 270, 280, 50], 0, 10)
+    tela.blit(fonte.render('Quit', True, 'white'), (440, 280))
+    tela.blit(superficie, (0, 0))
+    return botao_restart, botao_quitar
+
+
+# Iniciando música e loop
 pygame.mixer.music.play(loops=-1)
 rodando = True
+
+# Loop do jogo
 while rodando:
-    timer.tick(fps)
-    atualizar_posicao_bola()
-    atualizar_posicao_jogador()
-    checar_dificuldade()
-    checar_velocidade_boost()
+    timer.tick(fps) # Configurando fps do jogo
+
+
+    # Rodando funções enquanto o jogo não está pausado
+    if not pause:
+        atualizar_posicao_bola()
+        atualizar_posicao_jogador()
+        checar_dificuldade()
+        checar_velocidade_boost()
+
+    # Definindo ações a partir de clicks nas teclas e mouse
     for evento in pygame.event.get():
         if evento.type == pygame.QUIT:
             rodando = False
         if evento.type == pygame.KEYDOWN:
+            if evento.key == pygame.K_ESCAPE:
+                if pause:
+                    pause = False
+                    pygame.mixer.music.unpause()
+                else:
+                    pause = True
             if evento.key == pygame.K_LEFT or evento.key == pygame.K_a:
                 direcao_x_jogador = -1
                 imagem_pers = imagem_pers_e
@@ -220,6 +270,32 @@ while rodando:
                 gameover = False
                 perdeu = 0
                 som_boost = 0
+                pause = False
+        elif evento.type == pygame.MOUSEBUTTONDOWN:
+            if pause:
+                if recomeco.collidepoint(evento.pos):
+                    circulo_x = 300
+                    circulo_y = 300
+                    circulo_x_direc = 5
+                    circulo_y_direc = 8
+                    jogador_x = 300
+                    jogador_y = 500
+                    recorde_anterior = score
+                    if score > recorde:
+                        recorde = score
+                    score = 0
+                    last_grab = 0
+                    velocidade_jogador = 3
+                    velocidade_x = -100
+                    velocidade_y = -100
+                    velocidade_booster_disponivel = False
+                    gameover = False
+                    perdeu = 0
+                    som_boost = 0
+                    pause = False
+                    pygame.mixer.music.unpause()
+                elif quitando.collidepoint(evento.pos):
+                    rodando = False
 
     # Adicionando tela de ínicio
     while not inicio:
@@ -232,30 +308,44 @@ while rodando:
             if evento.type == pygame.MOUSEBUTTONDOWN and botao_start.collidepoint(evento.pos):
                 inicio = True
 
+    # Desenhando tela de pause
+    if pause and not gameover:
+        recomeco, quitando = pausar()
+        pygame.display.update()
+        pygame.mixer.music.pause()
 
+    
 
-    tela.fill((preto))
-    tela.blit(imagem_fundo,(0,0))
+    if not pause:
+        tela.fill((preto))
+        tela.blit(imagem_fundo,(0,0))
 
-    bola = pygame.draw.circle(tela, laranja, (circulo_x, circulo_y), 30, 5)
-    pygame.draw.circle(tela, vermelho, (circulo_x, circulo_y), 25)
-    tela.blit(imagem_bola,(circulo_x-40,circulo_y-40))
-    jogador = pygame.rect.Rect(jogador_x, jogador_y, largura_jogador, altura_jogador)
-    tela.blit(imagem_pers,(jogador_x,jogador_y))
-    checar_colisao(jogador.centerx, jogador.centery, bola.centerx, bola.centery)
-   
-   #preciso aprender como faz para ele tocar só uma vez
+        # Desenhando bola
+        bola = pygame.draw.circle(tela, laranja, (circulo_x, circulo_y), 30, 5)
+        pygame.draw.circle(tela, vermelho, (circulo_x, circulo_y), 25)
+        tela.blit(imagem_bola,(circulo_x-40,circulo_y-40))
+
+        # Desenhando jogador
+        jogador = pygame.rect.Rect(jogador_x, jogador_y, largura_jogador, altura_jogador)
+        tela.blit(imagem_pers,(jogador_x,jogador_y))
+        checar_colisao(jogador.centerx, jogador.centery, bola.centerx, bola.centery)
+    
     if gameover and perdeu == 0:
-        gameover_sound.play()
+        gameover_sound.play() # Toca o som de fim de jogo
         perdeu = 1
-    display_score = fonte.render('Score: '+ str(score), True, branco, preto)
-    tela.blit(display_score, (10, 10))
-    display_recorde_anterior = fonte.render('Last Score: '+ str(recorde_anterior), True, branco, preto)
-    tela.blit(display_recorde_anterior, (10, 30))
-    display_recorde = fonte.render('High Score: '+ str(recorde), True, branco, preto)
-    tela.blit(display_recorde, (10, 50))
-    if velocidade_booster_disponivel:
-        #preciso aprender como faz para ele tocar só uma vez
+    
+    # Exibindo as pontuações
+    if not pause:
+        display_score = fonte.render('Score: '+ str(score), True, branco, preto)
+        tela.blit(display_score, (10, 10))
+        display_recorde_anterior = fonte.render('Last Score: '+ str(recorde_anterior), True, branco, preto)
+        tela.blit(display_recorde_anterior, (10, 30))
+        display_recorde = fonte.render('High Score: '+ str(recorde), True, branco, preto)
+        tela.blit(display_recorde, (10, 50))
+    
+    # Desenhando o booster de velocidade
+    if velocidade_booster_disponivel and not pause:
+
         velocidade_boost = pygame.rect.Rect(velocidade_x, velocidade_y, 20, 20)
         tela.blit(imagem_boost,(velocidade_x,velocidade_y))
         if som_boost == 0:
@@ -263,14 +353,17 @@ while rodando:
             som_boost = 1
         if jogador.colliderect(velocidade_boost):
             boost_sound.play()
-            velocidade_jogador += 1
+            velocidade_jogador += 1 # Aumenta a velocidade do jogador
             velocidade_x = -100
             velocidade_y = -100
             last_grab = score
-            velocidade_booster_disponivel = False
+            velocidade_booster_disponivel = False # Remove o booster da tela
             som_boost = 0
-    display_velo = fonte.render('Velocidade: '+ str(velocidade_jogador - 2), True, branco, preto)
-    tela.blit(display_velo, (450, 10))
+    
+    # Exibe a velocidade do jogador
+    if not pause:
+        display_velo = fonte.render('Velocidade: '+ str(velocidade_jogador - 2), True, branco, preto)
+        tela.blit(display_velo, (450, 10))
     pygame.display.flip()
     contador += 1
 #Encerrando a biblioteca
