@@ -202,6 +202,38 @@ def pausar():
     tela.blit(superficie, (0, 0))
     return botao_restart, botao_quitar
 
+def reiniciar_jogo():
+    global circulo_x, circulo_y, circulo_x_direc, circulo_y_direc
+    global jogador_x, jogador_y
+    global recorde, recorde_anterior, score
+    global last_grab
+    global velocidade_jogador
+    global velocidade_x, velocidade_y
+    global velocidade_booster_disponivel
+    global gameover, perdeu, som_boost, pause
+
+    circulo_x = 300
+    circulo_y = 300
+    circulo_x_direc = 5
+    circulo_y_direc = 8
+
+    jogador_x = 300
+    jogador_y = 500
+
+    recorde_anterior = score
+    if score > recorde:
+        recorde = score
+    score = 0
+
+    last_grab = 0
+    velocidade_jogador = 3
+    velocidade_x = -100
+    velocidade_y = -100
+    velocidade_booster_disponivel = False
+    gameover = False
+    perdeu = 0
+    som_boost = 0
+    pause = False
 
 # Iniciando música e loop
 pygame.mixer.music.play(loops=-1)
@@ -252,47 +284,12 @@ while rodando:
             if evento.key == pygame.K_DOWN or evento.key == pygame.K_s:
                 direcao_y_jogador = 0
             if evento.key == pygame.K_SPACE and gameover:
-                circulo_x = 300
-                circulo_y = 300
-                circulo_x_direc = 5
-                circulo_y_direc = 8
-                jogador_x = 300
-                jogador_y = 500
-                recorde_anterior = score
-                if score > recorde:
-                    recorde = score
-                score = 0
-                last_grab = 0
-                velocidade_jogador = 3
-                velocidade_x = -100
-                velocidade_y = -100
-                velocidade_booster_disponivel = False
-                gameover = False
-                perdeu = 0
-                som_boost = 0
-                pause = False
+                reiniciar_jogo()
+                
         elif evento.type == pygame.MOUSEBUTTONDOWN:
             if pause:
                 if recomeco.collidepoint(evento.pos):
-                    circulo_x = 300
-                    circulo_y = 300
-                    circulo_x_direc = 5
-                    circulo_y_direc = 8
-                    jogador_x = 300
-                    jogador_y = 500
-                    recorde_anterior = score
-                    if score > recorde:
-                        recorde = score
-                    score = 0
-                    last_grab = 0
-                    velocidade_jogador = 3
-                    velocidade_x = -100
-                    velocidade_y = -100
-                    velocidade_booster_disponivel = False
-                    gameover = False
-                    perdeu = 0
-                    som_boost = 0
-                    pause = False
+                    reiniciar_jogo()
                     pygame.mixer.music.unpause()
                 elif quitando.collidepoint(evento.pos):
                     rodando = False
@@ -314,7 +311,6 @@ while rodando:
         pygame.display.update()
         pygame.mixer.music.pause()
 
-    
 
     if not pause:
         tela.fill((preto))
