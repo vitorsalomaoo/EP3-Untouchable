@@ -75,7 +75,6 @@ velocidade_x = -100
 velocidade_y = -100
 last_grab = 0
 
-
 # FUNÇÕES
 
 def checar_velocidade_boost():
@@ -107,7 +106,6 @@ def checar_dificuldade():
     elif circulo_y_direc < 0:
         circulo_y_direc = -8 - y_mod
 
-
 def checar_colisao(jogador_x, jogador_y, bola_x, bola_y):
     if abs(jogador_x - bola_x) < 44 and abs(jogador_y - bola_y) < 54:
         global direcao_x_jogador
@@ -120,7 +118,6 @@ def checar_colisao(jogador_x, jogador_y, bola_x, bola_y):
         circulo_y_direc = 0
         game_over()
 
-
 def game_over():
     global gameover
     display_game_over = fonte_game_over.render('GAME OVER', True, vermelho, preto)
@@ -128,8 +125,6 @@ def game_over():
     display_restart = fonte.render('Aperte Espaço para Recomeçar', True, branco, preto)
     tela.blit(display_restart, (140, 450))
     gameover = True
-    
-
 
 def atualizar_posicao_jogador():
     global jogador_x
@@ -235,6 +230,38 @@ def reiniciar_jogo():
     som_boost = 0
     pause = False
 
+def processar_keydown(evento):
+    global pause, direcao_x_jogador, direcao_y_jogador, imagem_pers
+    if evento.key == pygame.K_ESCAPE:
+        pause = not pause
+        if not pause:
+            pygame.mixer.music.unpause()
+    elif evento.key in [pygame.K_LEFT, pygame.K_a]:
+        direcao_x_jogador = -1
+        imagem_pers = imagem_pers_e
+    elif evento.key in [pygame.K_RIGHT, pygame.K_d]:
+        direcao_x_jogador = 1
+        imagem_pers = imagem_pers_d
+    elif evento.key in [pygame.K_UP, pygame.K_w]:
+        direcao_y_jogador = -1
+    elif evento.key in [pygame.K_DOWN, pygame.K_s]:
+        direcao_y_jogador = 1
+    elif evento.key == pygame.K_SPACE and gameover:
+        reiniciar_jogo()
+
+def processar_keyup(evento):
+    global direcao_x_jogador, direcao_y_jogador, imagem_pers
+    if evento.key in [pygame.K_LEFT, pygame.K_a]:
+        direcao_x_jogador = 0
+        imagem_pers = imagem_pers_e
+    elif evento.key in [pygame.K_RIGHT, pygame.K_d]:
+        direcao_x_jogador = 0
+        imagem_pers = imagem_pers_d
+    elif evento.key in [pygame.K_UP, pygame.K_w]:
+        direcao_y_jogador = 0
+    elif evento.key in [pygame.K_DOWN, pygame.K_s]:
+        direcao_y_jogador = 0
+
 # Iniciando música e loop
 pygame.mixer.music.play(loops=-1)
 rodando = True
@@ -242,7 +269,6 @@ rodando = True
 # Loop do jogo
 while rodando:
     timer.tick(fps) # Configurando fps do jogo
-
 
     # Rodando funções enquanto o jogo não está pausado
     if not pause:
@@ -256,36 +282,11 @@ while rodando:
         if evento.type == pygame.QUIT:
             rodando = False
         if evento.type == pygame.KEYDOWN:
-            if evento.key == pygame.K_ESCAPE:
-                if pause:
-                    pause = False
-                    pygame.mixer.music.unpause()
-                else:
-                    pause = True
-            if evento.key == pygame.K_LEFT or evento.key == pygame.K_a:
-                direcao_x_jogador = -1
-                imagem_pers = imagem_pers_e
-            if evento.key == pygame.K_RIGHT or evento.key == pygame.K_d:
-                direcao_x_jogador = 1
-                imagem_pers = imagem_pers_d
-            if evento.key == pygame.K_UP or evento.key == pygame.K_w:
-                direcao_y_jogador = -1
-            if evento.key == pygame.K_DOWN or evento.key == pygame.K_s:
-                direcao_y_jogador = 1
+            processar_keydown(evento)
         if evento.type == pygame.KEYUP:
-            if evento.key == pygame.K_LEFT or evento.key == pygame.K_a:
-                direcao_x_jogador = 0
-                imagem_pers = imagem_pers_e
-            if evento.key == pygame.K_RIGHT or evento.key == pygame.K_d:
-                direcao_x_jogador = 0
-                imagem_pers = imagem_pers_d
-            if evento.key == pygame.K_UP or evento.key == pygame.K_w:
-                direcao_y_jogador = 0
-            if evento.key == pygame.K_DOWN or evento.key == pygame.K_s:
-                direcao_y_jogador = 0
+            processar_keyup(evento)
             if evento.key == pygame.K_SPACE and gameover:
                 reiniciar_jogo()
-                
         elif evento.type == pygame.MOUSEBUTTONDOWN:
             if pause:
                 if recomeco.collidepoint(evento.pos):
@@ -310,7 +311,6 @@ while rodando:
         recomeco, quitando = pausar()
         pygame.display.update()
         pygame.mixer.music.pause()
-
 
     if not pause:
         tela.fill((preto))
